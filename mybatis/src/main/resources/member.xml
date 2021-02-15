@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!-- namespace xml을 구별하기위한 이름 -->
+<mapper namespace="memberns">
+
+
+ <select id="select" 
+ parameterType="string" resultType="member">
+  select*from member3 where id=#{id}
+ </select>
+<!-- member3는 sql테이블이 저거라서 .string은 객체라 소문자
+id는 사용자가 적어넣은거 받기 -->
+
+<!--  resultmap은 table의 컬럼명과 class의 member변수명이 다를때
+ mapping하는용. 이름같으면 괜찮 -->
+ 
+ <insert id="insert" parameterType="member">
+  insert into member3 values (
+  #{id},#{email},#{password},#{name},#{fileName},'n',sysdate)
+ </insert>
+ 
+ <update id="update" parameterType="member">
+ update member3 set 
+ email=#{email},password=#{password},name=#{name}
+ 
+ <!-- 사진선택하면 수정. 아니면 기존사진 사용  -->
+ <if test="fileName!=null">
+  , fileName=#{fileName}
+ </if>
+ 
+ where id=#{id}
+ </update>
+                     
+ <update id="delete" parameterType="string">
+ update member3 set del='y' where id=#{id}
+  </update>
+ 
+ <!-- 
+ update(Member member) {
+ delete(String id) {
+ daoimpl이 이래서 parameterType가 달라지는거 -->
+ 
+ <insert id="insertPhoto" parameterType="java.util.List">
+  insert all <!-- 입력여러개할꺼야 -->
+  <foreach collection="list" item="item">
+  into memberphoto (num,id,fileName)
+  values(get_seq,#{item.id},#{item.fileName})
+  
+  <!-- 여러건을 넘겨와서 타입이 이모양
+ foreach는 리스트서 하나씩 뽑아 item에 넣어 처리 반복-->
+  </foreach> 
+  select *from dual 
+  </insert> 
+  
+  <select id="listPhoto" parameterType="string"
+  resultType="memberphoto">
+  select * from memberphoto where id=#{id} order by num
+   
+  </select>
+</mapper>

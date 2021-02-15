@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE configuration PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-config.dtd">
+<configuration>
+	<typeAliases>
+		<typeAlias alias="member" type="com.ch.mybatis.model.Member" />
+		<typeAlias alias="MemberPhoto" type="com.ch.mybatis.model.MemberPhoto" />
+	<!--새로 사용 등록해줌 -->
+	</typeAliases>
+	<mappers>
+		<mapper resource="member.xml" />
+	</mappers>
+</configuration>
