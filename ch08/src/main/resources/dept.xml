@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- 이름변경 -->
+<!-- resultMap는 table에 컬럼명과 class에 dept변수명이 다를 때
+ mapping하는 용도. 함 해봅시다. -->
+<mapper namespace="deptns">
+	<resultMap type="dept" id="deptResult">
+		<result property="deptno" column="deptno"/>
+		<result property="dname"  column="dname"/>
+		<result property="loc" 	  column="loc"/>
+	</resultMap>
+	
+	<select id="list" resultMap="deptResult">
+<!-- 재료 꺼내주자 .type이 아니라 map을 쓸땐 이름지정표 id 써줌-->
+	select * from dept order by deptno
+	</select>
+	
+	             <!-- 넘버는 숫자니까 int -->
+	<select id="select" parameterType="integer" 
+	resultType="dept"> 
+	select * from dept where deptno=#{deptno}
+	</select>
+	
+	<insert id="insert" parameterType="dept">
+	insert into dept values (#{deptno} , #{dname} , #{loc})
+	</insert>
+	<!-- 입력수정삭제 성공이면 1 result됨 컨트롤러 보장
+	resultType은 조회할때만 씀. -->
+	
+	<update id="update" parameterType="dept">
+	 update dept set dname=#{dname}, loc=#{loc}
+	 where deptno=#{deptno} 
+	 <!-- #을 안에 넣어버렸네 콘솔 읽기까진 됐는데-->
+	</update>
+	
+	<delete id="delete" parameterType="integer">
+	 delete from dept where deptno=#{deptno} 
+	</delete>
+	
+</mapper>

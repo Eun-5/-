@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="empns">
+	<resultMap type="emp" id="empResult">
+		<result property="empno" column="empno" />
+		<result property="ename" column="ename" />
+		<result property="job" column="job" />
+		<result property="mgr" column="mgr" />
+		<result property="mgrName" column="mgrName" />
+		<result property="hiredate" column="hiredate" />
+		<result property="sal" column="sal" />
+		<result property="comm" column="comm" />
+		<result property="deptno" column="deptno" />
+		
+		<!-- 모델에 조인용으로 부서전체정보 dept 추가됐음 
+		       통째로 가져오자-->
+	<collection property="dept" resultMap="deptResult">	
+	</collection>
+	</resultMap>
+	
+	
+	<resultMap type="dept" id="deptResult">
+		<result property="deptno" column="deptno" />
+		<result property="dname" column="dname" />
+		<result property="loc" column="loc" />
+	</resultMap>
+	       
+	      <!--  deptno를 가져왔으니 int -->
+	<select id="list" parameterType="integer" resultType="emp">
+	select * from emp 
+	where deptno=#{deptno} order by ename
+	</select>
+	
+<!-- 리절트 맵해서 아래처럼 emp리절트 해도 오케이 -->
+<!-- parameterType은 외부데이터를 받는경우에 써준다
+ DaoImpl로부터 데이터 제공받아 xml에서사용할 떄 받는 데이터.. 라네-->
+
+<select id="empList" resultMap="empResult">
+ select * from emp order by ename
+</select>
+
+<!-- 넘어오는게 이 ㅆ음. no니까 숫자 -->
+<select id="select" parameterType="integer" resultType="emp">
+ select * from emp where empno=#{empno} 
+</select>
+
+<insert id="insert" parameterType="emp">
+ insert into emp values(#{empno},#{ename},#{job},
+ #{mgr},#{hiredate},#{sal},#{comm},#{deptno})
+</insert>
+
+<update id="update" parameterType="emp">
+update emp set ename=#{ename},job=#{job},
+ mgr=#{mgr},hiredate=#{hiredate},sal=#{sal},comm=#{comm},
+ deptno=#{deptno} where empno=#{empno}
+</update>
+
+<delete id="delete" parameterType="integer">
+delete from emp where empno=#{empno}
+</delete>
+<!-- 
+<select id="allEmpList" resultMap="empResult">
+empResult. dept포함된거
+
+select e.*,d.* from emp e, dept d 
+where e.deptno=d.deptno order by e.deptno,sal desc
+emp dept 전부 가져오자
+</select> -->
+
+
+<select id="allEmpList" resultMap="empResult">
+select w.*,m.ename mgrName,d.* 
+from emp m, emp w, dept d 
+where w.deptno=d.deptno and w.mgr=m.empno(+)
+order by w.deptno,w.sal desc
+<!-- 같은  emp 셀프조인.하나의 테이블을 둘로 쪼개기
+ 관리자 이름도 가져올꺼다
+ w.sal 직원 급여랑 관리자 급여 두가지가 있으니까 표시해줌
+ 킹(사장)까지 보고프면 아웃조인(+)를 해준다. 공란도 보겠다는거-->
+</select>
+
+
+</mapper>
